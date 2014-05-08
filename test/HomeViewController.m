@@ -17,12 +17,19 @@
 #import "HomeViewController.h"
 #import "MatchInfoViewController.h"
 #import "MatchBannerViewController.h"
+#import "HeaderContainer.h"
+
+#define kSCROLLVIEW_PAGE_SIZE 160
+#define kSCROLLVIEW_HEADER_PADDING 138
 
 @interface HomeViewController (){
     MatchInfoViewController* cardsViewController;
     MatchBannerViewController* matchBannerViewController;
     
-    UIScrollView* bannerScrollView;
+    UIScrollView* headerScrollView;
+    NSMutableArray* headerLabels;
+    int finalOffset;
+    
 }
 
 @end
@@ -42,58 +49,58 @@
 {
     CGSize screenSize = self.view.frame.size;
     [super viewDidLoad];
+    headerLabels = [NSMutableArray arrayWithCapacity:3];
     
-    //Create the BannerViewController
     matchBannerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MatchBannerViewController"];
     [matchBannerViewController.view setFrame:CGRectMake(0, 64, matchBannerViewController.view.frame.size.width, matchBannerViewController.view.frame.size.height)];
     
-    //Create the InfoViewController
     cardsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"MatchInfoViewController"];
     [cardsViewController.view setFrame:CGRectMake(0, 158 + 74, cardsViewController.view.frame.size.width, screenSize.height*0.8)];
     
     [self.view addSubview:matchBannerViewController.view];
     [self.view addSubview:cardsViewController.view];
     
-    //Assing the pageViewController in MatchInfoViewController scrollView delegate to HomeViewController in order to use the scrollViewDidScroll delegate method
     for (UIView *view in cardsViewController.cardPageViewController.view.subviews) {
         if ([view isKindOfClass:[UIScrollView class]]) {
             [(UIScrollView *)view setDelegate:self];
         }
     }
     
-    //Create the scrollView
-    bannerScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 218, 320, 34)];
-    [bannerScrollView setContentSize:CGSizeMake(320 * 3, 34)];
-    [bannerScrollView setScrollEnabled:YES];
-    [bannerScrollView setShowsHorizontalScrollIndicator:YES];
-    [bannerScrollView setShowsVerticalScrollIndicator:NO];
-    [bannerScrollView setBounces:NO];
-    [bannerScrollView setContentOffset:CGPointMake(0, 0)];
-    [bannerScrollView setPagingEnabled:YES];
+    HeaderContainer* headerContainer = [[HeaderContainer alloc] initWithFrame:CGRectMake(0, 218, 320, 34)];
     
-    //For debug porpuse we add 3 labels and a colored view
-    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320*3, 34)];
-    [view setBackgroundColor:[UIColor lightGrayColor]];
+    headerScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, kSCROLLVIEW_PAGE_SIZE, 34)];
+    [headerScrollView setContentSize:CGSizeMake(kSCROLLVIEW_PAGE_SIZE * [cardsViewController numberOfPagesInPageViewController], 34)];
+    [headerScrollView setScrollEnabled:YES];
+    [headerScrollView setShowsHorizontalScrollIndicator:YES];
+    [headerScrollView setShowsVerticalScrollIndicator:NO];
+    [headerScrollView setBounces:NO];
+    [headerScrollView setContentOffset:CGPointMake(0, 0)];
+    [headerScrollView setPagingEnabled:YES];
+    [headerScrollView setDelegate:self];
+    [headerScrollView setClipsToBounds:NO];
     
+    //For debug purpose only
+    for (int i = 0; i < 3; i++) {
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake((kSCROLLVIEW_PAGE_SIZE * i) + kSCROLLVIEW_HEADER_PADDING, 10, 60, 21)];
+        [label setTextColor:[UIColor whiteColor]];
+        [label setText:[NSString stringWithFormat:@"Label%i", i]];
+        
+        if (i > 0) {
+            [label setAlpha:0.5f];
+        }
+        
+        [headerScrollView addSubview:label];
+        [headerLabels addObject:label];
+    }
     
-    UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(138, 10, 60, 21)];
-    [label setTextColor:[UIColor whiteColor]];
-    [label setText:@"Label"];
-    
-    UILabel* label2 = [[UILabel alloc] initWithFrame:CGRectMake(458, 10, 60, 21)];
-    [label2 setTextColor:[UIColor whiteColor]];
-    [label2 setText:@"Label2"];
-    
-    UILabel* label3 = [[UILabel alloc] initWithFrame:CGRectMake(458 + 320, 10, 60, 21)];
-    [label3 setTextColor:[UIColor whiteColor]];
-    [label3 setText:@"Label3"];
-    
-    [bannerScrollView addSubview:view];
-    [bannerScrollView addSubview:label];
-    [bannerScrollView addSubview:label2];
-    [bannerScrollView addSubview:label3];
-    
-    [self.view addSubview:bannerScrollView];
+    [headerContainer setScrollView:headerScrollView];
+    [headerContainer addSubview:headerScrollView];
+    [self.view addSubview:headerContainer];
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    self.navigationController.interactivePopGestureRecognizer.enabled = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -104,15 +111,36 @@
 
 #pragma mark - UISrollViewDelegate
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    CGFloat percentage = scrollView.contentOffset.x / scrollView.contentSize.width;
-    
-    if ((int)scrollView.contentOffset.x != 320) {
-        CGPoint offset = CGPointMake((bannerScrollView.contentSize.width * percentage), 0);
-        [bannerScrollView setContentOffset:offset animated:YES];
-        NSLog(@"x: %f", offset.x);
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    if ([scrollView isEqual:headerScrollView]) {
+        UIPageViewControllerNavigationDirection direction;
+        
+        if ([cardsViewController ActivePageIndex] < (finalOffset/kSCROLLVIEW_PAGE_SIZE)) {
+            direction = UIPageViewControllerNavigationDirectionForward;
+        } else {
+            direction = UIPageViewControllerNavigationDirectionReverse;
+        }
+        [[cardsViewController cardPageViewController] setViewControllers:@[[cardsViewController getViewControllerForIndex:(finalOffset/kSCROLLVIEW_PAGE_SIZE)]] direction:direction animated:YES completion:nil];
+        
+    } else {
+        [headerScrollView setContentOffset:CGPointMake(kSCROLLVIEW_PAGE_SIZE * [cardsViewController ActivePageIndex], 0) animated:YES];
     }
+    
+    [headerLabels enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [UIView animateWithDuration:0.5f animations:^{
+            if (idx == [cardsViewController ActivePageIndex]) {
+                [obj setAlpha:1.0f];
+            } else {
+                [obj setAlpha:0.5f];
+            }
+        }];
+    }];
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if ([scrollView isEqual:headerScrollView]) {
+        finalOffset = scrollView.contentOffset.x;
+    }
+}
 
 @end

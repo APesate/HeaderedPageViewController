@@ -10,7 +10,6 @@
 
 @interface MatchInfoContainerViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-@property (weak, nonatomic) IBOutlet UIScrollView *headerScrollView;
 @property (weak, nonatomic) IBOutlet UITableView *contentTableView;
 @property (weak, nonatomic) IBOutlet UIView *messageContainer;
 @property (weak, nonatomic) IBOutlet UITextField *messageTextField;

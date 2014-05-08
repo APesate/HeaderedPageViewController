@@ -26,6 +26,7 @@
 		82CD46FE191AF49F00DE01F7 /* MatchContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82CD46F9191AF49F00DE01F7 /* MatchContainerViewController.m */; };
 		82CD46FF191AF49F00DE01F7 /* MatchInfoContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82CD46FB191AF49F00DE01F7 /* MatchInfoContainerViewController.m */; };
 		82CD4704191B02B300DE01F7 /* Home-Soccer-Background.png in Resources */ = {isa = PBXBuildFile; fileRef = 82CD4703191B02B300DE01F7 /* Home-Soccer-Background.png */; };
+		82CD470A191B2B2100DE01F7 /* HeaderContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 82CD4709191B2B2100DE01F7 /* HeaderContainer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,8 @@
 		82CD46FA191AF49F00DE01F7 /* MatchInfoContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatchInfoContainerViewController.h; sourceTree = "<group>"; };
 		82CD46FB191AF49F00DE01F7 /* MatchInfoContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MatchInfoContainerViewController.m; sourceTree = "<group>"; };
 		82CD4703191B02B300DE01F7 /* Home-Soccer-Background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Home-Soccer-Background.png"; sourceTree = "<group>"; };
+		82CD4708191B2B2100DE01F7 /* HeaderContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeaderContainer.h; sourceTree = "<group>"; };
+		82CD4709191B2B2100DE01F7 /* HeaderContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeaderContainer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +179,8 @@
 				82CD46F9191AF49F00DE01F7 /* MatchContainerViewController.m */,
 				82CD46FA191AF49F00DE01F7 /* MatchInfoContainerViewController.h */,
 				82CD46FB191AF49F00DE01F7 /* MatchInfoContainerViewController.m */,
+				82CD4708191B2B2100DE01F7 /* HeaderContainer.h */,
+				82CD4709191B2B2100DE01F7 /* HeaderContainer.m */,
 			);
 			name = Containers;
 			sourceTree = "<group>";
@@ -297,6 +302,7 @@
 				82CD46FE191AF49F00DE01F7 /* MatchContainerViewController.m in Sources */,
 				82CD46D4191AF3F600DE01F7 /* HomeViewController.m in Sources */,
 				82CD46FF191AF49F00DE01F7 /* MatchInfoContainerViewController.m in Sources */,
+				82CD470A191B2B2100DE01F7 /* HeaderContainer.m in Sources */,
 				82CD46CE191AF3F500DE01F7 /* AppDelegate.m in Sources */,
 				82CD46CA191AF3F500DE01F7 /* main.m in Sources */,
 			);

@@ -10,7 +10,9 @@
 #import "MatchInfoContainerViewController.h"
 
 @interface MatchInfoViewController (){
-    NSArray* pagesArray;
+    NSMutableArray* pagesArray;
+    
+    int activePage;
 }
 
 @end
@@ -29,8 +31,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    //For debug porpuse we create an array representing the number of view controllers
-    pagesArray = @[@"1", @"2", @"3"];
+    // Do any additional setup after loading the view.
+    activePage = 0;
+    pagesArray = [NSMutableArray arrayWithCapacity:3];
+    
+    for (int i = 0; i < 3; i++) {
+        [pagesArray addObject:[self viewControllerAtIndex:i]];
+    }
+    
     [self instatiatePageViewController];
 }
 
@@ -39,17 +47,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 #pragma mark - UIPageViewController
 
@@ -62,7 +59,7 @@
     }
     
     index--;
-    return [self viewControllerAtIndex:index];
+    return [pagesArray objectAtIndex:index];
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
@@ -77,14 +74,14 @@
     if (index == [pagesArray count]) {
         return nil;
     }
-    return [self viewControllerAtIndex:index];
+    return [pagesArray objectAtIndex:index];
 }
 
 - (MatchInfoContainerViewController *)viewControllerAtIndex:(NSUInteger)index
 {
-    if (([pagesArray count] == 0) || (index >= [pagesArray count])) {
-        return nil;
-    }
+    //    if (([pagesArray count] == 0) || (index >= [pagesArray count])) {
+    //        return nil;
+    //    }
     
     // Create a new view controller and pass suitable data.
     CGSize screenSize = self.view.frame.size;
@@ -95,6 +92,12 @@
     return matchContainer;
 }
 
+- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed{
+    if (completed) {
+        activePage = [[[_cardPageViewController viewControllers] firstObject] index];
+    }
+}
+
 - (void)instatiatePageViewController {
     // Create page view controller
     _cardPageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
@@ -102,10 +105,10 @@
     _cardPageViewController.delegate = self;
     
     
-    MatchInfoContainerViewController *startingViewController = [self viewControllerAtIndex:0];
-    NSArray *viewControllers = @[startingViewController];
+    // MatchInfoContainerViewController *startingViewController = [pagesArray firstObject];
+    NSArray *viewControllers = pagesArray;
     
-    [_cardPageViewController setViewControllers:viewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    [_cardPageViewController setViewControllers:@[[viewControllers firstObject]]  direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
     // Change the size of page view controller
     CGSize screenSize = self.view.frame.size;
@@ -116,5 +119,17 @@
     [_cardPageViewController didMoveToParentViewController:self];
 }
 
+- (NSInteger)numberOfPagesInPageViewController {
+    return [pagesArray count];
+}
+
+- (MatchInfoContainerViewController *)getViewControllerForIndex:(NSInteger)index {
+    activePage = index;
+    return (MatchInfoContainerViewController *)[pagesArray objectAtIndex:index];
+}
+
+- (int)ActivePageIndex {
+    return activePage;
+}
 
 @end
