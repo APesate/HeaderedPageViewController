@@ -11,7 +11,6 @@
 
 @interface MatchInfoViewController (){
     NSArray* pagesArray;
-    int activePageIndex;
 }
 
 @end
@@ -33,7 +32,6 @@
     //For debug porpuse we create an array representing the number of view controllers
     pagesArray = @[@"1", @"2", @"3"];
     [self instatiatePageViewController];
-    activePageIndex = 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -93,7 +91,6 @@
     MatchInfoContainerViewController *matchContainer = [self.storyboard instantiateViewControllerWithIdentifier:@"MatchInfoContainerViewController"];
     [matchContainer.view setFrame:CGRectMake(0, 0, 320, screenSize.height - 158)];
     matchContainer.index = index;
-    activePageIndex = index;
     
     return matchContainer;
 }
@@ -119,8 +116,5 @@
     [_cardPageViewController didMoveToParentViewController:self];
 }
 
-- (NSInteger)currentPageIndex{
-    return activePageIndex;
-}
 
 @end

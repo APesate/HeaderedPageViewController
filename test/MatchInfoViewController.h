@@ -12,6 +12,4 @@
 
 @property (nonatomic, strong) UIPageViewController* cardPageViewController;
 
-- (NSInteger)currentPageIndex;
-
 @end
